@@ -1,0 +1,139 @@
+services:
+
+  consul:
+    image: "hashicorp/consul:1.19"
+    container_name: consul
+    hostname: "consul"
+    command: "agent -dev -client 0.0.0.0"
+    ports:
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:53/udp"
+    restart: always
+
+  vault:
+    depends_on:
+      - consul
+    image: "hashicorp/vault:1.17"
+    container_name: vault
+    hostname: "vault"
+    links:
+      - "consul:consul"
+    environment:
+      VAULT_ADDR: http://127.0.0.1:8200
+    ports:
+      - "8200:8200"
+    volumes:
+      - ./tools/wait-for-it.sh:/wait-for-it.sh
+      - ./config/vault:/config
+      - ./config/vault/policies:/policies
+    entrypoint: vault server -config=/config/with-consul.hcl
+    restart: always
+
+  blueocean:
+    user: root
+    depends_on:
+      - vault
+    image: "jenkins/jenkins:jdk17"
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - 'jenkins-data:/var/jenkins_home'
+    restart: always
+
+  nexus:
+    image: "sonatype/nexus3:latest"
+    container_name: nexus
+    hostname: "nexus"
+    ports:
+      - "8081:8081"
+    volumes:
+      - 'nexus-data:/nexus-data'
+    restart: always
+    environment:
+      - NEXUS_CONTEXT=/
+
+  gitlab:
+    image: "gitlab/gitlab-ee:latest"
+    container_name: gitlab
+    hostname: "gitlab"
+    ports:
+      - "8929:8929"  # Web интерфейс GitLab
+      - "2224:22"    # SSH для Git
+      - "8089:80"    # HTTP для GitLab
+    volumes:
+      - 'gitlab-config:/etc/gitlab'
+      - 'gitlab-logs:/var/log/gitlab'
+      - 'gitlab-data:/var/opt/gitlab'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://192.168.50.51:8929'
+    restart: always
+
+  sonarqube:
+    image: "sonarqube:latest"
+    container_name: sonarqube
+    hostname: "sonarqube"
+    depends_on:
+      - nexus
+    ports:
+      - "9001:9000"  # Пробрасываем внешний порт 9001 на внутренний 9000
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - 'sonarqube-conf:/opt/sonarqube/conf'
+      - 'sonarqube-data:/opt/sonarqube/data'
+      - 'sonarqube-logs:/opt/sonarqube/logs'
+      - 'sonarqube-extensions:/opt/sonarqube/extensions'
+    restart: always
+
+  opensearch:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch-node1
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"  # Настройка памяти для JVM
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=StrongPassword123!
+      - plugins.security.ssl.http.enabled=false  # Отключаем SSL на HTTP
+      - plugins.security.ssl.transport.enabled=true  # Оставляем включённым SSL для транспортных соединений
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"  # HTTP API для OpenSearch
+      - "9600:9600"  # Для мониторинга OpenSearch
+    restart: always
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:latest
+    container_name: opensearch-dashboards
+    ports:
+      - "5601:5601"  # Web-интерфейс OpenSearch Dashboards
+    environment:
+      OPENSEARCH_HOSTS: '["http://opensearch:9200"]'
+    depends_on:
+      - opensearch
+    restart: always
+
+
+volumes:
+  jenkins-data:
+  nexus-data:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  sonarqube-conf:
+  sonarqube-data:
+  sonarqube-logs:
+  sonarqube-extensions:
+  opensearch-data:
+  
+
