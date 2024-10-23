@@ -113,15 +113,15 @@ services:
   #   restart: always
 
   # opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:latest
-    container_name: opensearch-dashboards
-    ports:
-      - "5601:5601"  # Web-интерфейс OpenSearch Dashboards
-    environment:
-      OPENSEARCH_HOSTS: '["http://opensearch:9200"]'
-    depends_on:
-      - opensearch
-    restart: always
+  #   image: opensearchproject/opensearch-dashboards:latest
+  #   container_name: opensearch-dashboards
+  #   ports:
+  #     - "5601:5601"  # Web-интерфейс OpenSearch Dashboards
+  #   environment:
+  #     OPENSEARCH_HOSTS: '["http://opensearch:9200"]'
+  #   depends_on:
+  #     - opensearch
+  #   restart: always
 
 
 volumes:
