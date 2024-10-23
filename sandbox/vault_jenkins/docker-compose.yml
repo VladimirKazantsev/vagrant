@@ -27,7 +27,11 @@ services:
       - ./tools/wait-for-it.sh:/wait-for-it.sh
       - ./config/vault:/config
       - ./config/vault/policies:/policies
-    entrypoint: vault server -config=/config/with-consul.hcl
+      - ./init_vault.sh:/init_vault.sh  # Добавляем скрипт
+    # entrypoint: vault server -config=/config/with-consul.hcl
+    entrypoint: >
+      /bin/sh -c "vault server -config=/config/with-consul.hcl &
+      sleep 5 && /init_vault.sh"  # Запускаем скрипт после старта Vault
     restart: always
 
   blueocean:
