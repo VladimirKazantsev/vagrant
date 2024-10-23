@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Инициализация Vault
 INIT_OUTPUT=$(vault operator init -key-shares=1 -key-threshold=1)
@@ -11,4 +11,4 @@ ROOT_TOKEN=$(echo "$INIT_OUTPUT" | grep 'Initial Root Token:' | awk '{print $NF}
 vault operator unseal "$UNSEAL_KEY"
 
 # Вывод токена для дальнейшего использования
-echo "Root Token: $ROOT_TOKEN"
+echo "Вывод токена для дальнейшего использования: $ROOT_TOKEN"
