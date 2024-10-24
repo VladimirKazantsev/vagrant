@@ -18,4 +18,4 @@ sudo docker compose up -d
 sleep 15
 sudo docker exec vault sh -c ls
 sudo docker exec vault sh -c "/init_vault.sh"
-sudo docker exec jenkins bash -c "echo 'Пароль от Дженкинс'; cat /var/jenkins_home/secrets/initialAdminPassword"
+sudo docker exec jenkins bash -c "echo 'Пароль от Дженкинс:'; cat /var/jenkins_home/secrets/initialAdminPassword"
