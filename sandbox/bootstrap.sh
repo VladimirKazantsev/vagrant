@@ -15,4 +15,5 @@ sudo cp -r /tmp/vault_jenkins/ /root/
 cd /root/vault_jenkins/
 chmod +x init_vault.sh
 sudo docker compose up -d
+sleep 15
 sudo docker exec vault sh -c /init_vault.sh
