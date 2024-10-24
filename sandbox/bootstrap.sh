@@ -16,4 +16,5 @@ cd /root/vault_jenkins/
 chmod +x init_vault.sh
 sudo docker compose up -d
 sleep 15
+sudo docker exec vault sh -c ls
 sudo docker exec vault sh -c /init_vault.sh
