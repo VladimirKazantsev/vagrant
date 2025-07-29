@@ -14,7 +14,8 @@ services:
   vault:
     depends_on:
       - consul
-    image: "hashicorp/vault:1.17"
+    image: "hashicorp/vault:latest"
+    # image: "hashicorp/vault:1.17"
     container_name: vault
     hostname: "vault"
     links:
