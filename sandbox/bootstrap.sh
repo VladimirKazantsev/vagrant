@@ -13,6 +13,7 @@ docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.
 
 sudo cp -r /tmp/vault_jenkins/ /root/
 cd /root/vault_jenkins/
+sed -i 's/\r//' init_vault.sh
 chmod +x init_vault.sh
 sudo docker compose up -d
 sleep 15
