@@ -36,7 +36,8 @@ services:
     user: root
     depends_on:
       - vault
-    image: "jenkins/jenkins:jdk17"
+    image: "jenkins/jenkins:latest"
+    # image: "jenkins/jenkins:jdk17"
     container_name: jenkins
     ports:
       - "8080:8080"
