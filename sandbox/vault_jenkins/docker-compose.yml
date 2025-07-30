@@ -1,7 +1,8 @@
 services:
 
   consul:
-    image: "hashicorp/consul:1.19"
+	  image: "hashicorp/consul:latest"
+    # image: "hashicorp/consul:1.19"
     container_name: consul
     hostname: "consul"
     command: "agent -dev -client 0.0.0.0"
@@ -36,8 +37,8 @@ services:
     user: root
     depends_on:
       - vault
-    image: "jenkins/jenkins:latest"
-    # image: "jenkins/jenkins:jdk17"
+    # image: "jenkins/jenkins:latest"
+    image: "jenkins/jenkins:jdk21"
     container_name: jenkins
     ports:
       - "8080:8080"
