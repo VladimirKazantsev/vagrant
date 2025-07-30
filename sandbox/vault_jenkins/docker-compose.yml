@@ -1,7 +1,7 @@
 services:
 
   consul:
-    image: "hashicorp/consul:1.19"
+    image: "hashicorp/consul:latest"
     container_name: consul
     hostname: "consul"
     command: "agent -dev -client 0.0.0.0"
